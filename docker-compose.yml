@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+
+  crserver-filter:
+    build: .
+    ports:
+    - 3333:80
+    volumes:
+    - ./log:/usr/local/openresty/nginx/logs
+    - ./conf.d/crserver-filter.conf:/etc/nginx/conf.d/crserver-filter.conf
