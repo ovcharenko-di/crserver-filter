@@ -24,7 +24,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - "./data/nginx:/etc/nginx/lua
+      - "./data/nginx:/etc/nginx/lua"
 
 
     

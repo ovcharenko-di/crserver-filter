@@ -3,4 +3,4 @@
 
 -- пример: фильтр текста комментария в коммите
 local filter = require "v8.commitFilter"
-m.apply(nil)
+filter.apply(nil)
