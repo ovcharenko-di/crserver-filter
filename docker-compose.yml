@@ -1,10 +1,30 @@
-version: "3.8"
-services:
+# maintainer "Dima Ovcharenko <d.ovcharenko90@gmail.com>"
+# maintainer "EvilBeaver <ovsiankin.aa@gmail.com>"
 
-  crserver-filter:
-    build: .
+version: "3.8"
+
+services:
+  crs:
+    image: evilbeaver/crs:8.3.17.1989
+      
+  apache:
+    build:
+      context: ./apache
+      args:
+        DOCKER_USERNAME: evilbeaver
+        ONEC_VERSION: 8.3.17.1989
     ports:
-    - 3333:80
+      - "5520"
     volumes:
-    - ./log:/usr/local/openresty/nginx/logs
-    - ./conf.d/crserver-filter.conf:/etc/nginx/conf.d/crserver-filter.conf
+      - "./data/apache:/opt/apache/htdocs"
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - "./data/nginx:/etc/nginx/lua
+
+
+    
