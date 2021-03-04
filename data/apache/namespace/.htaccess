@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteBase /ccr
+RewriteRule ^system$ 8.3.17.1989.1ccr/namespace/system [L]
