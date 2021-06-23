@@ -1,10 +1,15 @@
+# maintainer "Dima Ovcharenko <d.ovcharenko90@gmail.com>"
+
 version: "3.8"
 services:
 
   crserver-filter:
     build: .
+    restart: always
     ports:
     - 3333:80
     volumes:
-    - ./log:/usr/local/openresty/nginx/logs
     - ./conf.d/crserver-filter.conf:/etc/nginx/conf.d/crserver-filter.conf
+    - ./data/nginx:/etc/nginx/lua
+    - ./nginx/lualib:/usr/local/openresty/lualib/v8/
+    - ./log:/usr/local/openresty/nginx/logs
