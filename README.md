@@ -116,6 +116,6 @@
 
 ## Спасибо
 
-- [Алексею Сосновому](https://github.com/asosnovy), автору проекта-прототипа [commitHook](https://github.com/asosnoviy/commitHook)
+- [Алексею Сосновому](https://github.com/asosnoviy), автору проекта-прототипа [commitHook](https://github.com/asosnoviy/commitHook)
 - [Андрею Овсянкину](https://github.com/EvilBeaver), за помощь в развитии проекта
 - [Олегу Тымко](https://github.com/OTymko), за помощь с разбором протокола хранилища
