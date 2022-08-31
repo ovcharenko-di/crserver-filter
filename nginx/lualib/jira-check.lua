@@ -18,7 +18,7 @@ local function parse_json_body(body)
 end
 
 function _M.get_task_status(task)
-    local uri = "https://jira.melonfashion.ru/rest/api/2/issue/"+task+"?fields=status&fieldsByKeys=false"
+    local uri = "https://jira.melonfashion.ru/rest/api/2/issue/"..task.."?fields=status&fieldsByKeys=false"
     local res, err = ngx.timer.at(0, jira_get_timer, uri)
 
     if not res then
