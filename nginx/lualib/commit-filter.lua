@@ -31,6 +31,7 @@ function _M.check_comment(pattern, errorMessage)
         ngx.exit(ngx.HTTP_BAD_REQUEST)
     end
 
+    -- проверка на соответствие паттерну
     if pattern ~= nil then
         local rex = require('rex_pcre')
         local captures = rex.match(commitMessage, pattern)
@@ -39,10 +40,31 @@ function _M.check_comment(pattern, errorMessage)
             ngx.header.content_type = 'text/plain; charset=utf-8'
             ngx.say(errorMessage)
             ngx.exit(ngx.HTTP_BAD_REQUEST)
-        else
-            return
         end
     end
+
+    -- проверка на соответствие статуса задачи в Jira
+    -- Паттерн для номера задачи
+    local task_key_pattern = [[^BUH-\d{1,8}\b]]
+    -- Список валидных статусов jira
+    local validStatuses = Set { "MFG_IN PROGRESS", "MFG_Test", "MFG_Need To Correct"}
+    
+    local task = rex.match(captures, task_key_pattern) 
+    local jira_check = require("v8.jira-check")
+    local status = jira_check.get_task_status(task)
+   
+
+    if not validStatuses[status] then
+        ngx.status = ngx.HTTP_BAD_REQUEST
+        ngx.header.content_type = 'text/plain; charset=utf-8'
+        ngx.say("Задача"+task+" не прошла проверку в Jira!")
+        ngx.say("Помещать в хранилище можно только в статусах:")
+        for _,v in pairs(validStatuses) do
+            ngx.say("- "+ v) 
+        end
+        ngx.exit(ngx.HTTP_BAD_REQUEST)
+    end 
+    
 end
 
 return _M
