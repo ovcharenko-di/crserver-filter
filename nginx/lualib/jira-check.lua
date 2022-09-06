@@ -27,7 +27,7 @@ function _M.get_task_status(task)
     local res, err = httpc:request_uri(uri, {
         method = "GET",
         headers = {
-            ["Authorization"] = 'Basic amVua2luczo9YUJQPWZUbSl9MjhTM3hE',
+            ["Authorization"] = 'Basic <данные авторизации jira>',
         },
         ssl_verify = false
     })
