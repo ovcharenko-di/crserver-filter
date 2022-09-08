@@ -1,5 +1,11 @@
 local _M = {}
 
+local function create_list(list)
+    local set = {}
+    for _, l in ipairs(list) do set[l] = true end
+    return set
+end
+
 function _M.check_comment(pattern, errorMessage)
 
     ngx.req.read_body()
@@ -11,6 +17,8 @@ function _M.check_comment(pattern, errorMessage)
 
     local commentNode = [[<crs:comment>(.*)</crs:comment>]]
     local commitMessage
+    local rex
+    local captures
     if req:match([[name="DevDepot_commitObjects"]]) ~= nil then
         commitMessage = req:match(commentNode)
     elseif req:match([[DevDepot_changeVersion]]) ~= nil then
@@ -47,8 +55,8 @@ function _M.check_comment(pattern, errorMessage)
     -- Паттерн для номера задачи
     local task_key_pattern = [[BUH-\d{1,8}\b]]
     -- Список валидных статусов jira
-    validStatusesArray = {"MFG_IN PROGRESS", "MFG_Test", "MFG_Need To Correct"}
-    local validStatuses = Set(validStatusesArray) 
+    local validStatusesArray = {"MFG_IN PROGRESS", "MFG_Test", "MFG_Need To Correct"}
+    local validStatuses = create_list(validStatusesArray) 
 
     local task = rex.match(captures, task_key_pattern) 
     local jira_check = require("v8.jira-check")
@@ -67,12 +75,6 @@ function _M.check_comment(pattern, errorMessage)
     end
     ngx.log(ngx.DEBUG, "Great! Status <".. status.. "> found in <".. table.concat(validStatusesArray, ", ")..">") 
     
-end
-
-function Set (list)
-    local set = {}
-    for _, l in ipairs(list) do set[l] = true end
-    return set
 end
 
 return _M
