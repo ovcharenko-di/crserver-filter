@@ -1,10 +1,12 @@
 # maintainer "Dima Ovcharenko <d.ovcharenko90@gmail.com>"
 
-version: "3.8"
+version: "3"
 services:
 
   crserver-filter:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
     ports:
     - 3333:80
@@ -13,3 +15,4 @@ services:
     - ./data/nginx:/etc/nginx/lua
     - ./nginx/lualib:/usr/local/openresty/lualib/v8/
     - ./log:/usr/local/openresty/nginx/logs
+    - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt

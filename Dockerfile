@@ -1,12 +1,14 @@
-FROM openresty/openresty:bionic
+FROM openresty/openresty:xenial
 
 RUN apt-get update && apt-get install -y \
     git \
     libssl-dev \
-    pcre2-utils \
-    && rm -rf /var/lib/apt/lists/* \
-    && /usr/local/openresty/luajit/bin/luarocks install lrexlib-pcre \
-    && /usr/local/openresty/luajit/bin/luarocks install lua-resty-http \
-    && /usr/local/openresty/luajit/bin/luarocks install telegram-bot-lua
+    libpcre3-dev \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+RUN /usr/local/openresty/luajit/bin/luarocks install lrexlib-pcre
+RUN /usr/local/openresty/luajit/bin/luarocks install lua-resty-http 
+#RUN /usr/local/openresty/luajit/bin/luarocks install telegram-bot-lua 
+RUN /usr/local/openresty/luajit/bin/luarocks install lua-cjson
 
-LABEL maintainer="Dima Ovcharenko <d.ovcharenko90@gmail.com>"
+LABEL maintainer="Ivanov Egor"
