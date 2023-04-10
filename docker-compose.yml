@@ -8,3 +8,4 @@ services:
     volumes:
     - ./log:/usr/local/openresty/nginx/logs
     - ./conf.d/crserver-filter.conf:/etc/nginx/conf.d/crserver-filter.conf
+    - ./modules:/usr/local/openresty/lualib/
