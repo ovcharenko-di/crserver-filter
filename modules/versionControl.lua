@@ -44,6 +44,39 @@ function _M.check_version(enabled, request_body)
     else
         ngx.log(ngx.DEBUG, "Определена предыдущай версия хранилища: " .. previousVersion)
     end
+
+    if currentVersion ~= nil and previousVersion ~= nil then
+        local currentV = currentVersion:match([[(%d+%.?%d*%.?%d*)$]])
+        local prevV = previousVersion:match([[(%d+%.?%d*%.?%d*)$]])
+        if currentV ~= nil and prevV ~= nil then
+            local v = require 'modules.semver'
+            local vCur = v(currentV)
+            local vPrev = v(prevV)
+            ngx.log(ngx.DEBUG, " - - - - - - : " .. prevV .. " - - " ..currentV)
+            if vCur == vPrev then
+                ngx.log(ngx.DEBUG, "Необходимо изменить номер версии! Твоя версия: " .. currentV)
+
+                crs_keys:set(crsName, previousVersion)
+                ngx.status = ngx.HTTP_BAD_REQUEST
+                ngx.header.content_type = 'text/plain; charset=utf-8'
+                ngx.say("Необходимо изменить номер версии! Твоя версия: " .. currentV)
+                ngx.exit(ngx.HTTP_BAD_REQUEST)
+                return                            
+            elseif vCur < vPrev then
+                ngx.log(ngx.DEBUG, "Понижение версии запрещено! Твоя версия: " .. currentV .. " Последняя зарегистрированная : " ..prevV) 
+
+                crs_keys:set(crsName, previousVersion)
+                ngx.status = ngx.HTTP_BAD_REQUEST
+                ngx.header.content_type = 'text/plain; charset=utf-8'
+                ngx.say("Понижение версии запрещено! Твоя версия: " .. currentV .. " Последняя зарегистрированная : " ..prevV)
+                ngx.exit(ngx.HTTP_BAD_REQUEST)
+                return  
+            else
+                ngx.log(ngx.DEBUG, "Красавчик, версию поднял! " .. prevV .. "  -> : " ..currentV) 
+            end
+        end
+    end
+   
      
     if currentVersion ~= nil and crsName ~= nil and currentVersion ~= previousVersion then
         crs_keys:set(crsName, currentVersion)
@@ -57,7 +90,7 @@ function _M.check_version(enabled, request_body)
         ngx.log(ngx.DEBUG, "Ранних записей по версии конфигурации не удалось обнаружить. Помещение разрешено.")              
         return
     elseif currentVersion ~= previousVersion then
-        ngx.log(ngx.DEBUG, "Отлично, версия изменена! Была: " .. previousVersion .. "Стала: " .. currentVersion)
+        ngx.log(ngx.DEBUG, "Отлично, версия изменена! Была: " .. previousVersion .. " Стала: " .. currentVersion)
     else
         ngx.log(ngx.DEBUG, "Необходимо изменить номер версии! Последняя зарегистрированая: " .. previousVersion)
         crs_keys:set(crsName, previousVersion)
