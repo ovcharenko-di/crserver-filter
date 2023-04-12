@@ -14,13 +14,13 @@ local CheckFormatComment = false; --Проверка комментария вк
 local CheckEmptyComment = false; --Проверка пустого комментария вкл\выкл
 local CheckVersion = true; --Проверка изменения версии конфигурации
 
-local versionControl = require "versionControl"
+local versionControl = require "modules.versionControl"
 versionControl.check_version(CheckVersion, req)
 
-local emptyCommentControl = require "emptyCommentControl"
+local emptyCommentControl = require "modules.emptyCommentControl"
 emptyCommentControl.check_comment(CheckEmptyComment, req)
 
-local formatCommentControl = require "formatCommentControl"
+local formatCommentControl = require "modules.formatCommentControl"
 formatCommentControl.check_format_comment(CheckFormatComment, req)
 
 
