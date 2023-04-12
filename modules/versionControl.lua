@@ -54,51 +54,32 @@ function _M.check_version(enabled, request_body)
             local vPrev = v(prevV)
             ngx.log(ngx.DEBUG, " - - - - - - : " .. prevV .. " - - " ..currentV)
             if vCur == vPrev then
-                ngx.log(ngx.DEBUG, "Необходимо изменить номер версии! Твоя версия: " .. currentV)
+                ngx.log(ngx.DEBUG, "Необходимо изменить номер версии! Твоя версия: " .. currentV .. " нужно указать: -> "  .. vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch  .." <- Последняя зарегистрированная : ")
 
                 crs_keys:set(crsName, previousVersion)
                 ngx.status = ngx.HTTP_BAD_REQUEST
                 ngx.header.content_type = 'text/plain; charset=utf-8'
-                ngx.say("Необходимо изменить номер версии! Твоя версия: " .. currentV)
+                ngx.say("Необходимо изменить номер версии! Твоя версия: " .. currentV .. " нужно указать: -> " .. vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch  .." <- ")
                 ngx.exit(ngx.HTTP_BAD_REQUEST)
                 return                            
             elseif vCur < vPrev then
-                ngx.log(ngx.DEBUG, "Понижение версии запрещено! Твоя версия: " .. currentV .. " Последняя зарегистрированная : " ..prevV) 
+                ngx.log(ngx.DEBUG, "Понижение версии запрещено! Твоя версия: " .. currentV .. " нужно указать: -> " .. vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch  .." <- Последняя зарегистрированная : " ..prevV) 
 
                 crs_keys:set(crsName, previousVersion)
                 ngx.status = ngx.HTTP_BAD_REQUEST
                 ngx.header.content_type = 'text/plain; charset=utf-8'
-                ngx.say("Понижение версии запрещено! Твоя версия: " .. currentV .. " Последняя зарегистрированная : " ..prevV)
+                ngx.say("Понижение версии запрещено! Твоя версия: " .. currentV .. " нужно указать: -> " .. vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch  .." <- Последняя зарегистрированная : " ..prevV) 
                 ngx.exit(ngx.HTTP_BAD_REQUEST)
                 return  
             else
+                crs_keys:set(crsName, currentVersion)
                 ngx.log(ngx.DEBUG, "Красавчик, версию поднял! " .. prevV .. "  -> : " ..currentV) 
             end
         end
     end
-   
-     
-    if currentVersion ~= nil and crsName ~= nil and currentVersion ~= previousVersion then
+    if currentVersion ~= nil and crsName ~= nil and currentVersion ~= previousVersion then -- первое помещение по хранилищу
         crs_keys:set(crsName, currentVersion)
         ngx.log(ngx.DEBUG, "Для хранилища: " .. crsName .. " записано соответствие верисии : " .. currentVersion)
-    end
-    
-    if currentVersion == nil and crsName == nil then
-        ngx.log(ngx.DEBUG, "Не удалось узнать версию")
-        return
-    elseif previousVersion == nil then
-        ngx.log(ngx.DEBUG, "Ранних записей по версии конфигурации не удалось обнаружить. Помещение разрешено.")              
-        return
-    elseif currentVersion ~= previousVersion then
-        ngx.log(ngx.DEBUG, "Отлично, версия изменена! Была: " .. previousVersion .. " Стала: " .. currentVersion)
-    else
-        ngx.log(ngx.DEBUG, "Необходимо изменить номер версии! Последняя зарегистрированая: " .. previousVersion)
-        crs_keys:set(crsName, previousVersion)
-        ngx.status = ngx.HTTP_BAD_REQUEST
-        ngx.header.content_type = 'text/plain; charset=utf-8'
-        ngx.say("Необходимо изменить номер версии! Последняя зарегистрированая: " .. previousVersion)
-        ngx.exit(ngx.HTTP_BAD_REQUEST)
-        return
     end
 
 end
