@@ -19,7 +19,7 @@ function _M.check_format_comment(enabled, request_body)
     end
 
     -- вот здесь можно написать свои проверки
-    local five_digits = message:match([[^#%d%d%d%d%d]])
+    local five_digits = message:match([[^P1C-%d%d%d%d%d]])
     local no_task = message:match([[^#нетзадачи]])
     local double_n = message:match("\n\n")
     if (five_digits ~= nil or no_task ~= nil) and double_n ~= nil then

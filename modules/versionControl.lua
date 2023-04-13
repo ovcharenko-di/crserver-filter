@@ -11,23 +11,26 @@ function _M.check_version(enabled, request_body)
     local crs_keys = ngx.shared.crs_keys
 
     local crsName
-    local crsNamePattern = [[alias="(%a+)"]]
+    local crsNamePattern = [[alias="(.+)" name]]
     if request_body:match([[DevDepot_commitObjects]]) ~= nil then
         crsName = request_body:match(crsNamePattern) -- имя хранилища
+        ngx.log(ngx.DEBUG, "Идентифицировано хранилища: " .. crsName)
     else
         return
         ngx.log(ngx.DEBUG, "Не удалось идентифицировать имя хранилища")
     end
-    ngx.log(ngx.DEBUG, "Идентифицировано хранилища: " .. crsName)
-    
+
     local currentVersion
     local versionPattern = [[<crs:code value="(.*)"/>]]
     if request_body:match([[DevDepot_commitObjects]]) ~= nil then
         currentVersion = request_body:match(versionPattern) -- версия хранилища
-        ngx.log(ngx.DEBUG, "Определена версия конфигурации хранилища: " .. currentVersion)
+
     else
         currentVersion = nil
         ngx.log(ngx.DEBUG, "Не удалось определить версию конфигурации хранилища")
+    end
+    if  currentVersion ~= nil then
+        ngx.log(ngx.DEBUG, "Определена версия конфигурации хранилища: " .. currentVersion)
     end
 
     if request_body:match([[debug]]) ~= nil then --для выводи текста запроса в окно сообщения 1с надо написать в тексте комментария 'debug'
