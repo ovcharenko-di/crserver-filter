@@ -1,7 +1,7 @@
 local _M = {}
 
 -- проверка на пустой комментарий
-function _M.check_format_comment(enabled, request_body)
+function _M.check_format_comment(enabled, request_body, errors)
 
     if enabled == false then
         ngx.log(ngx.DEBUG, "Проверка формата комментария отключена")
@@ -17,6 +17,9 @@ function _M.check_format_comment(enabled, request_body)
     else
         return
     end
+    if message == nil then
+        return
+    end
 
     -- вот здесь можно написать свои проверки
     local five_digits = message:match([[^P1C-%d%d%d%d%d]])
@@ -25,14 +28,10 @@ function _M.check_format_comment(enabled, request_body)
     if (five_digits ~= nil or no_task ~= nil) and double_n ~= nil then
         return
     else
-        ngx.status = ngx.HTTP_BAD_REQUEST
-        ngx.header.content_type = 'text/plain; charset=utf-8'
-        ngx.say("Помещение в хранилище отклонено")
-        ngx.say("НЕВЕРНЫЙ ФОРМАТ КОММЕНТАРИЯ")
-        ngx.say("комментарий должен:")
-        ngx.say("- начинаться на #12345 (где 12345 - номер задачи) или на #нетзадачи")
-        ngx.say("- содержать пустую строку, отделяющую заголовок комментария от тела")
-        ngx.exit(ngx.HTTP_BAD_REQUEST)
+        table.insert(errors, "Неверный форма комментария (comment_control)")
+        table.insert(errors, "комментарий должен:")
+        table.insert(errors, "- начинаться на #12345 (где 12345 - номер задачи) или на #нетзадачи")
+        table.insert(errors, "- содержать пустую строку, отделяющую заголовок комментария от тела")
     end
 
 end

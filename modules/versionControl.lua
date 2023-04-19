@@ -1,7 +1,6 @@
 local _M = {}
 
-
-function _M.check_version(enabled, request_body)
+function _M.check_version(enabled, request_body, errors)
 
     if enabled == false then
         ngx.log(ngx.DEBUG, "Проверка изменения версии конфигурации отключена")
@@ -55,36 +54,39 @@ function _M.check_version(enabled, request_body)
             local v = require 'modules.semver'
             local vCur = v(currentV)
             local vPrev = v(prevV)
+            local nextV = vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch
             ngx.log(ngx.DEBUG, " - - - - - - : " .. prevV .. " - - " ..currentV)
             if vCur == vPrev then
-                ngx.log(ngx.DEBUG, "Необходимо изменить номер версии! Твоя версия: " .. currentV .. " нужно указать: -> "  .. vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch  .." <- Последняя зарегистрированная : ")
-
-                crs_keys:set(crsName, previousVersion)
-                ngx.status = ngx.HTTP_BAD_REQUEST
-                ngx.header.content_type = 'text/plain; charset=utf-8'
-                ngx.say("Необходимо изменить номер версии! Твоя версия: " .. currentV .. " нужно указать: -> " .. vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch  .." <- ")
-                ngx.exit(ngx.HTTP_BAD_REQUEST)
+                --crs_keys:set(crsName, previousVersion)
+                --SetStorageVersion(crs_keys, crsName, previousVersion, errors)
+                ngx.log(ngx.DEBUG, "Необходимо изменить номер версии! Твоя версия: " .. currentV .. " нужно указать: -> "  .. nextV  .." <-  (version_control)")
+                table.insert(errors, "Необходимо изменить номер версии! Твоя версия: " .. currentV .. " нужно указать: -> " .. nextV  .." <- (version_control)")
                 return                            
             elseif vCur < vPrev then
-                ngx.log(ngx.DEBUG, "Понижение версии запрещено! Твоя версия: " .. currentV .. " нужно указать: -> " .. vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch  .." <- Последняя зарегистрированная : " ..prevV) 
-
-                crs_keys:set(crsName, previousVersion)
-                ngx.status = ngx.HTTP_BAD_REQUEST
-                ngx.header.content_type = 'text/plain; charset=utf-8'
-                ngx.say("Понижение версии запрещено! Твоя версия: " .. currentV .. " нужно указать: -> " .. vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch  .." <- Последняя зарегистрированная : " ..prevV) 
-                ngx.exit(ngx.HTTP_BAD_REQUEST)
+                --crs_keys:set(crsName, previousVersion)
+                --SetStorageVersion(crs_keys, crsName, previousVersion, errors)
+                ngx.log(ngx.DEBUG, "Понижение версии запрещено! Твоя версия: " .. currentV .. " нужно указать: -> " .. nextV  .." <- Последняя зарегистрированная : " ..prevV .. " (version_control)") 
+                table.insert(errors, "Понижение версии запрещено! Твоя версия: " .. currentV .. " нужно указать: -> " .. nextV  .." <- Последняя зарегистрированная : " ..prevV.. " (version_control)") 
                 return  
             else
-                crs_keys:set(crsName, currentVersion)
+                --crs_keys:set(crsName, currentVersion)
+                SetStorageVersion(crs_keys, crsName, currentVersion, errors)
                 ngx.log(ngx.DEBUG, "Красавчик, версию поднял! " .. prevV .. "  -> : " ..currentV) 
             end
         end
     end
     if currentVersion ~= nil and crsName ~= nil and currentVersion ~= previousVersion then -- первое помещение по хранилищу
-        crs_keys:set(crsName, currentVersion)
+        --crs_keys:set(crsName, currentVersion)
+        SetStorageVersion(crs_keys, crsName, currentVersion, errors)
         ngx.log(ngx.DEBUG, "Для хранилища: " .. crsName .. " записано соответствие верисии : " .. currentVersion)
     end
 
+end
+
+function SetStorageVersion(crs_keys, crsName, currentVersion, errors)
+    if #errors == 0 then 
+        crs_keys:set(crsName, currentVersion)
+    end
 end
 
 return _M
