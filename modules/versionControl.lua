@@ -57,35 +57,29 @@ function _M.check_version(enabled, request_body, errors)
             local nextV = vPrev:nextPatch().major .. "." .. vPrev:nextPatch().minor  .. "." ..vPrev:nextPatch().patch
             ngx.log(ngx.DEBUG, " - - - - - - : " .. prevV .. " - - " ..currentV)
             if vCur == vPrev then
-                --crs_keys:set(crsName, previousVersion)
-                --SetStorageVersion(crs_keys, crsName, previousVersion, errors)
                 ngx.log(ngx.DEBUG, "Необходимо изменить номер версии! Твоя версия: " .. currentV .. " нужно указать: -> "  .. nextV  .." <-  (version_control)")
                 table.insert(errors, "Необходимо изменить номер версии! Твоя версия: " .. currentV .. " нужно указать: -> " .. nextV  .." <- (version_control)")
                 return                            
             elseif vCur < vPrev then
-                --crs_keys:set(crsName, previousVersion)
-                --SetStorageVersion(crs_keys, crsName, previousVersion, errors)
                 ngx.log(ngx.DEBUG, "Понижение версии запрещено! Твоя версия: " .. currentV .. " нужно указать: -> " .. nextV  .." <- Последняя зарегистрированная : " ..prevV .. " (version_control)") 
                 table.insert(errors, "Понижение версии запрещено! Твоя версия: " .. currentV .. " нужно указать: -> " .. nextV  .." <- Последняя зарегистрированная : " ..prevV.. " (version_control)") 
                 return  
             else
-                --crs_keys:set(crsName, currentVersion)
                 SetStorageVersion(crs_keys, crsName, currentVersion, errors)
                 ngx.log(ngx.DEBUG, "Красавчик, версию поднял! " .. prevV .. "  -> : " ..currentV) 
             end
         end
     end
     if currentVersion ~= nil and crsName ~= nil and currentVersion ~= previousVersion then -- первое помещение по хранилищу
-        --crs_keys:set(crsName, currentVersion)
-        SetStorageVersion(crs_keys, crsName, currentVersion, errors)
-        ngx.log(ngx.DEBUG, "Для хранилища: " .. crsName .. " записано соответствие верисии : " .. currentVersion)
+        SetStorageVersion(crs_keys, crsName, currentVersion, errors)     
     end
 
 end
 
 function SetStorageVersion(crs_keys, crsName, currentVersion, errors)
-    if #errors == 0 then 
+    if next(errors) == nil  then 
         crs_keys:set(crsName, currentVersion)
+        ngx.log(ngx.DEBUG, "Для хранилища: " .. crsName .. " записано соответствие верисии : " .. currentVersion .. " ошибок : " .. #errors )
     end
 end
 

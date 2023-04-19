@@ -15,14 +15,14 @@ local CheckFormatComment = true; --Проверка комментария вк�
 local CheckEmptyComment = true; --Проверка пустого комментария вкл\выкл
 local CheckVersion = true; --Проверка изменения версии конфигурации
 
-local versionControl = require "modules.versionControl"
-versionControl.check_version(CheckVersion, req, errors)
-
 local emptyCommentControl = require "modules.emptyCommentControl"
 emptyCommentControl.check_comment(CheckEmptyComment, req, errors)
 
 local formatCommentControl = require "modules.formatCommentControl"
 formatCommentControl.check_format_comment(CheckFormatComment, req, errors)
+
+local versionControl = require "modules.versionControl"
+versionControl.check_version(CheckVersion, req, errors)
 
 if #errors > 0 then 
     ngx.status = ngx.HTTP_BAD_REQUEST
